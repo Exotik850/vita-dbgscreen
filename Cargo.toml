@@ -6,7 +6,7 @@ readme = "README.md"
 license = "MIT"
 description = "A simple debug screen for the PlayStation Vita using Rust and vitasdk-sys."
 repository = "https://github.com/Exotik850/vita-dbgscreen"
-keywords = ["playstation vita", "rust", "vitasdk", "debug screen"]
+keywords = ["video-game", "rust", "debugging"]
 categories = ["embedded"]
 
 [dependencies]
