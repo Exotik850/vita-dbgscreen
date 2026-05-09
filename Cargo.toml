@@ -11,9 +11,16 @@ categories = ["embedded"]
 
 [dependencies]
 vitasdk-sys = { version = "0.3", features = [
-    "SceDisplayForDriver_stub",
-    "SceSysmemForDriver_stub",
+    "SceDisplay_stub",
+    "SceSysmem_stub",
 ] }
+
+[package.metadata.vita]
+title_id = "DBGSCRN01"
 
 [features]
 bindgen = ["vitasdk-sys/bindgen"]
+
+[[example]]
+name = "basic"
+path = "examples/basic.rs"

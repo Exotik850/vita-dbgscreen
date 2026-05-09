@@ -6,8 +6,8 @@ use std::time::Duration;
 
 use vitasdk_sys::{
     SCE_DISPLAY_SETBUF_NEXTFRAME, SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW, SceDisplayFrameBuf,
-    SceUID, ksceDisplaySetFrameBuf, ksceKernelAllocMemBlock, ksceKernelFreeMemBlock,
-    ksceKernelGetMemBlockBase,
+    SceUID, sceDisplaySetFrameBuf, sceKernelAllocMemBlock, sceKernelFreeMemBlock,
+    sceKernelGetMemBlockBase,
 };
 
 pub struct DebugFont {
@@ -57,15 +57,18 @@ impl Framebuffer {
         // Allocate memory to use as display buffer
         let mut base: *mut c_void = ::core::ptr::null_mut();
         let block_uid = unsafe {
-            let block_uid: SceUID = ksceKernelAllocMemBlock(
+            let block_uid: SceUID = sceKernelAllocMemBlock(
                 b"display\0".as_ptr() as *const i8,
                 SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW,
                 SCREEN_FB_SIZE as u32,
                 ::core::ptr::null_mut(),
             );
-            ksceKernelGetMemBlockBase(block_uid, &mut base);
+            sceKernelGetMemBlockBase(block_uid, &mut base);
             block_uid
         };
+        if base == ::core::ptr::null_mut() {
+            panic!("Failed to allocate framebuffer memory");
+        }
         Framebuffer {
             buf: base as *mut u32,
             block_uid,
@@ -83,7 +86,7 @@ impl Framebuffer {
             height: SCREEN_HEIGHT as u32,
         };
         unsafe {
-            ksceDisplaySetFrameBuf(&frame, SCE_DISPLAY_SETBUF_NEXTFRAME as i32);
+            sceDisplaySetFrameBuf(&frame, SCE_DISPLAY_SETBUF_NEXTFRAME);
         }
     }
 
@@ -105,7 +108,7 @@ impl Framebuffer {
 
 impl Drop for Framebuffer {
     fn drop(&mut self) {
-        let _error_code = unsafe { ksceKernelFreeMemBlock(self.block_uid) };
+        let _error_code = unsafe { sceKernelFreeMemBlock(self.block_uid) };
     }
 }
 
