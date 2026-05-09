@@ -1,0 +1,16 @@
+[package]
+name = "vita-dbgscreen"
+version = "0.1.0"
+edition = "2024"
+readme = "README.md"
+license = "MIT"
+description = "A simple debug screen for the PlayStation Vita using Rust and vitasdk-sys."
+repository = "https://github.com/Exotik850/vita-dbgscreen"
+keywords = ["playstation vita", "rust", "vitasdk", "debug screen"]
+categories = ["embedded"]
+
+[dependencies]
+vitasdk-sys = { version = "0.3", features = [
+    "SceDisplayForDriver_stub",
+    "SceSysmemForDriver_stub",
+] }
