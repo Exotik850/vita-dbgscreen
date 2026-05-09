@@ -19,3 +19,9 @@ let mut dbgscreen = DebugScreen::new();
 // you can use standard macros like write! and writeln!
 writeln!(dbgscreen, "Hello World from vita-dbgscreen!").unwrap();
 ```
+
+There's also a basic panic handler included that will display panic messages on the debug screen. To use it, simply set it as the panic handler in your `main.rs`:
+
+```rust
+use vita_dbgscreen::set_dbg_screen_panic_handler;
+```

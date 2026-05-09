@@ -212,7 +212,7 @@ impl DebugScreen {
     }
 }
 
-fn custom_panic_hook(info: &std::panic::PanicHookInfo) {
+pub fn dbg_screen_panic_hook(info: &std::panic::PanicHookInfo) {
     // The current implementation always returns `Some`.
     let location = info.location().unwrap();
     let msg = match info.payload().downcast_ref::<&'static str>() {
@@ -239,10 +239,10 @@ fn custom_panic_hook(info: &std::panic::PanicHookInfo) {
     std::thread::sleep(Duration::from_secs(10));
 }
 
-pub fn set_basic_panic_handler() {
+pub fn set_dbg_screen_panic_handler() {
     let default_hook = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |info| {
-        custom_panic_hook(info);
+        dbg_screen_panic_hook(info);
         default_hook(info);
     }));
 }
