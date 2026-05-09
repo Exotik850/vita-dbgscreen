@@ -1,6 +1,6 @@
 [package]
 name = "vita-dbgscreen"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 readme = "README.md"
 license = "MIT"
@@ -14,3 +14,6 @@ vitasdk-sys = { version = "0.3", features = [
     "SceDisplayForDriver_stub",
     "SceSysmemForDriver_stub",
 ] }
+
+[features]
+bindgen = ["vitasdk-sys/bindgen"]

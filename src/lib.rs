@@ -2,6 +2,7 @@ use core::ffi::c_void;
 use core::fmt::{Result, Write};
 use core::mem::size_of;
 use core::ptr;
+use std::time::Duration;
 
 use vitasdk_sys::{
     SCE_DISPLAY_SETBUF_NEXTFRAME, SCE_KERNEL_MEMBLOCK_TYPE_USER_CDRAM_RW, SceDisplayFrameBuf,
@@ -209,4 +210,39 @@ impl DebugScreen {
             self.coord_x += DEBUG_FONT.size_w;
         }
     }
+}
+
+fn custom_panic_hook(info: &std::panic::PanicHookInfo) {
+    // The current implementation always returns `Some`.
+    let location = info.location().unwrap();
+    let msg = match info.payload().downcast_ref::<&'static str>() {
+        Some(s) => *s,
+        None => match info.payload().downcast_ref::<String>() {
+            Some(s) => &s[..],
+            None => "Box<Any>",
+        },
+    };
+    let name = "unknown";
+    let mut screen = DebugScreen::new();
+    writeln!(
+        screen,
+        "thread '{}' panicked at '{}', {}",
+        name, msg, location
+    )
+    .ok();
+    // Give 2 seconds to see the error in case capturing the stack trace fails
+    // (capturing the stack trace allocates memory)
+    std::thread::sleep(Duration::from_secs(2));
+    // The backtrace is full of "unknown" as there's no elf to parse on the vita
+    let backtrace = std::backtrace::Backtrace::force_capture();
+    writeln!(screen, "{}", backtrace).ok();
+    std::thread::sleep(Duration::from_secs(10));
+}
+
+pub fn set_basic_panic_handler() {
+    let default_hook = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |info| {
+        custom_panic_hook(info);
+        default_hook(info);
+    }));
 }
